@@ -17,16 +17,33 @@ export const saveStickyNoteAPI = async (text: string): Promise<StickyNote> => {
 }
 
 export const removeStickyNoteAPI = async (id: number): Promise<StickyNote[]> => {
-    let list = await localStorage.getItem('sticky-list') ?? '[]'
-    let parsedList: StickyNote[] = JSON.parse(list)
+    let list = await getList();
 
-    const newStickyNoteList = parsedList.filter((stickyNote: StickyNote) => stickyNote.id != id)
+    const newStickyNoteList = list.filter((stickyNote: StickyNote) => stickyNote.id != id)
     await localStorage.setItem('sticky-list', JSON.stringify(newStickyNoteList))
 
     return newStickyNoteList
 }
 
 export const getStickyNotesAPI = async (): Promise<StickyNote[]> => {
+    let list = await getList();
+
+    return list
+}
+
+export const updateStickyNotePositionAPI = async (id: number, newPosition: { top: number, left: number }): Promise<void> => {
+    let list = await getList();
+
+    list.forEach((stickyNote: StickyNote) => {
+        if (stickyNote.id == id) {
+            stickyNote.initPosition = newPosition
+        }
+    })
+
+    await localStorage.setItem('sticky-list', JSON.stringify(list))
+}
+
+const getList = async (): Promise<StickyNote[]> => {
     let list = await localStorage.getItem('sticky-list') ?? '[]'
     let parsedList: StickyNote[] = JSON.parse(list)
 

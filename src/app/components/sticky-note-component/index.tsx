@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState, type DragEvent, type RefObject } from 'react'
 import './style.css'
 import { useStickyNotes, type StickyNote } from '../../contexts/StickyNoteContext'
+import { updateStickyNotePositionAPI } from '../../../../mockAPI/mockAPIs'
 
 type StickyNoteComponentProp = {
   data: StickyNote,
@@ -28,7 +29,7 @@ function StickyNoteComponent({ data, containerRef, removeRef }: StickyNoteCompon
     }
   }, []);
 
-  const onDrag = (e: DragEvent<HTMLDivElement>) => {
+  const onDrag = async (e: DragEvent<HTMLDivElement>) => {
 
     if (containerRef.current && elementRef.current && removeRef.current) {
       const removeElement = removeRef.current.getBoundingClientRect();
@@ -53,6 +54,7 @@ function StickyNoteComponent({ data, containerRef, removeRef }: StickyNoteCompon
       newX = Math.max(0, Math.min(newX, parentRect.width - elementRect.width));
       newY = Math.max(0, Math.min(newY, parentRect.height - elementRect.height));
 
+      await updateStickyNotePositionAPI(data.id, { left: newX, top: newY })
       setPosition({ left: newX, top: newY })
     }
   }
