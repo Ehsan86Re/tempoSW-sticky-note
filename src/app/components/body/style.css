@@ -3,3 +3,22 @@
     position: relative;
     height: calc(100vh - 60px);
 }
+
+#delete {
+    margin-top: 10px;
+    width: 100px;
+    height: 100px;
+    background-color: rgb(240, 58, 58);
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: 10px;
+    text-align: center;
+    align-items: center;
+    align-content: center;
+}
+
+#delete img {
+    width: 50%;
+    height: auto;
+}

@@ -1,14 +1,16 @@
 import { useCallback, useRef, useState, type DragEvent, type RefObject } from 'react'
 import './style.css'
-import type { StickyNote } from '../../contexts/StickyNoteContext'
+import { useStickyNotes, type StickyNote } from '../../contexts/StickyNoteContext'
 
 type StickyNoteComponentProp = {
   data: StickyNote,
   containerRef: RefObject<HTMLDivElement | null>
+  removeRef: RefObject<HTMLDivElement | null>
 }
 
-function StickyNoteComponent({ data, containerRef }: StickyNoteComponentProp) {
+function StickyNoteComponent({ data, containerRef, removeRef }: StickyNoteComponentProp) {
 
+  const { removeStickNote } = useStickyNotes()
   const [position, setPosition] = useState<{ left: number, top: number }>({ ...data.initPosition })
 
   const elementRef = useRef<HTMLDivElement | null>(null);
@@ -26,11 +28,22 @@ function StickyNoteComponent({ data, containerRef }: StickyNoteComponentProp) {
     }
   }, []);
 
-  const onDrag = useCallback((e: DragEvent<HTMLDivElement>) => {
+  const onDrag = (e: DragEvent<HTMLDivElement>) => {
 
-    if (containerRef.current && elementRef.current) {
+    if (containerRef.current && elementRef.current && removeRef.current) {
+      const removeElement = removeRef.current.getBoundingClientRect();
       const parentRect = containerRef.current.getBoundingClientRect();
       const elementRect = elementRef.current.getBoundingClientRect();
+
+
+      // if pointer is in remove button area
+      if (
+        removeElement.left < e.clientX && e.clientX < removeElement.left + removeElement.width &&
+        removeElement.top < e.clientY && e.clientY < removeElement.top + removeElement.height
+      ) {
+        removeStickNote(data.id)
+        return
+      }
 
       // Calculate new position relative to the parent container
       let newX = e.clientX - parentRect.left - offset.current.x;
@@ -42,7 +55,7 @@ function StickyNoteComponent({ data, containerRef }: StickyNoteComponentProp) {
 
       setPosition({ left: newX, top: newY })
     }
-  }, [])
+  }
 
   return (
     <div ref={elementRef} draggable onDragEnd={onDrag} onDragStart={onDragStart} className='sticky-note' style={{ ...position, backgroundColor: data.color }}>

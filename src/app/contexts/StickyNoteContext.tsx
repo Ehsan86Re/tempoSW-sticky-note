@@ -12,14 +12,15 @@ export interface StickyNote {
 export type StickyNoteContextType = {
   stickyNotes: StickyNote[];
   saveStickyNote: (note: string) => void;
+  removeStickNote: (id: number) => void;
 };
 
 export const StickyNoteContext = createContext<StickyNoteContextType | null>(null);
 
 export const useStickyNotes = () => {
-  const { stickyNotes, saveStickyNote } = useContext(StickyNoteContext) as StickyNoteContextType;
+  const { stickyNotes, saveStickyNote, removeStickNote } = useContext(StickyNoteContext) as StickyNoteContextType;
 
-  return { stickyNotes, saveStickyNote }
+  return { stickyNotes, saveStickyNote, removeStickNote }
 }
 
 const StickyNoteProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
@@ -27,7 +28,7 @@ const StickyNoteProvider: React.FC<{children: React.ReactNode}> = ({ children })
 
   const saveStickyNote = (note: string) => {
     const newStickyNote: StickyNote = {
-      id: Math.random(),
+      id: Math.floor(Math.random() * 1000),
       value: note,
       initPosition: { top: Math.random() * 100, left: Math.random() * 100 },
       color: selectRandomColorType()
@@ -36,7 +37,13 @@ const StickyNoteProvider: React.FC<{children: React.ReactNode}> = ({ children })
     setStickyNotes([...stickyNotes, newStickyNote]);
   };
 
-  return <StickyNoteContext.Provider value={{ stickyNotes, saveStickyNote }}>
+  const removeStickNote = (id:  number) => {
+    const newStickyNoteList = stickyNotes.filter((stickyNote: StickyNote) => stickyNote.id != id)
+
+    setStickyNotes(newStickyNoteList)
+  }
+
+  return <StickyNoteContext.Provider value={{ stickyNotes, saveStickyNote, removeStickNote }}>
     {children}
   </StickyNoteContext.Provider>;
 };

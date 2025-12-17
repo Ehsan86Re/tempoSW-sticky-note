@@ -6,10 +6,19 @@ import { useRef } from 'react';
 function Body() {
     const { stickyNotes } = useStickyNotes();
     const containerRef = useRef<HTMLDivElement>(null);
+    const removeButtonRed = useRef<HTMLDivElement>(null);
 
     return (
         <div ref={containerRef} id="container">
-            {stickyNotes.map((stickyNote: StickyNote) => <StickyNoteComponent key={stickyNote.id} data={stickyNote} containerRef={containerRef}/>)}
+            <div id='delete' ref={removeButtonRed}>
+                <img src='delete.png'/>
+            </div>
+            {stickyNotes.map((stickyNote: StickyNote) => <StickyNoteComponent
+                key={stickyNote.id}
+                data={stickyNote}
+                containerRef={containerRef}
+                removeRef={removeButtonRed}
+            />)}
         </div>
     )
 }
