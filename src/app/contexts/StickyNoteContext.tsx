@@ -1,8 +1,12 @@
 import { useState, createContext, useContext } from 'react';
+import selectRandomColorType from '../utils/selectRandomColor';
+import type { ColorType } from '../types';
 
 export interface StickyNote {
   id: number;
   value: string;
+  initPosition: { top: number, left: number }
+  color: ColorType
 }
 
 export type StickyNoteContextType = {
@@ -19,12 +23,14 @@ export const useStickyNotes = () => {
 }
 
 const StickyNoteProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
-  const [stickyNotes, setStickyNotes] = useState<StickyNote[]>([{ id: 10, value: 'Sample Text for test' }]);
+  const [stickyNotes, setStickyNotes] = useState<StickyNote[]>([]);
 
   const saveStickyNote = (note: string) => {
     const newStickyNote: StickyNote = {
       id: Math.random(),
-      value: note
+      value: note,
+      initPosition: { top: Math.random() * 100, left: Math.random() * 100 },
+      color: selectRandomColorType()
     };
   
     setStickyNotes([...stickyNotes, newStickyNote]);

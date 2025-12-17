@@ -9,7 +9,7 @@ type StickyNoteComponentProp = {
 
 function StickyNoteComponent({ data, containerRef }: StickyNoteComponentProp) {
 
-  const [position, setPosition] = useState<{ left: number, top: number }>({ left: 0, top: 10 })
+  const [position, setPosition] = useState<{ left: number, top: number }>({ ...data.initPosition })
 
   const elementRef = useRef<HTMLDivElement | null>(null);
   const offset = useRef({ x: 0, y: 0 });
@@ -45,7 +45,7 @@ function StickyNoteComponent({ data, containerRef }: StickyNoteComponentProp) {
   }, [])
 
   return (
-    <div ref={elementRef} draggable onDragEnd={onDrag} onDragStart={onDragStart} className='sticky-note' style={{ ...position }}>
+    <div ref={elementRef} draggable onDragEnd={onDrag} onDragStart={onDragStart} className='sticky-note' style={{ ...position, backgroundColor: data.color }}>
       {data.value}
     </div>
   )
