@@ -1,5 +1,5 @@
-import { useState, createContext, useContext } from 'react';
-import selectRandomColorType from '../utils/selectRandomColor';
+import { useState, createContext, useContext, useEffect } from 'react';
+import { getStickyNotesAPI, removeStickyNoteAPI, saveStickyNoteAPI } from '../../../mockAPI/mockAPIs'
 import type { ColorType } from '../types';
 
 export interface StickyNote {
@@ -26,21 +26,23 @@ export const useStickyNotes = () => {
 const StickyNoteProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const [stickyNotes, setStickyNotes] = useState<StickyNote[]>([]);
 
-  const saveStickyNote = (note: string) => {
-    const newStickyNote: StickyNote = {
-      id: Math.floor(Math.random() * 1000),
-      value: note,
-      initPosition: { top: Math.random() * 100, left: Math.random() * 100 },
-      color: selectRandomColorType()
-    };
-  
+  useEffect(() => {
+    (async () => {
+      const list: StickyNote[]= await getStickyNotesAPI()
+      setStickyNotes(list)
+    })()
+  }, [])
+
+  const saveStickyNote = async (note: string) => {
+    const newStickyNote = await saveStickyNoteAPI(note)
     setStickyNotes([...stickyNotes, newStickyNote]);
   };
 
-  const removeStickNote = (id:  number) => {
-    const newStickyNoteList = stickyNotes.filter((stickyNote: StickyNote) => stickyNote.id != id)
+  const removeStickNote = async (id:  number) => {
 
-    setStickyNotes(newStickyNoteList)
+    const newList = await removeStickyNoteAPI(id)
+
+    setStickyNotes(newList)
   }
 
   return <StickyNoteContext.Provider value={{ stickyNotes, saveStickyNote, removeStickNote }}>
