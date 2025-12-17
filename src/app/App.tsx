@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import './App.css'
 import Header from './components/header'
+import StickyNoteProvider from './contexts/StickyNoteContext'
 
 function App() {
 
   return (
-    <div id="main-container">
-      <Header />
-    </div>
+    <StickyNoteProvider>
+      <div id="main-container">
+        <Header />
+      </div>
+    </StickyNoteProvider>
   )
 }
 
