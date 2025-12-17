@@ -1,0 +1,54 @@
+import { useCallback, useRef, useState, type DragEvent, type RefObject } from 'react'
+import './style.css'
+import type { StickyNote } from '../../contexts/StickyNoteContext'
+
+type StickyNoteComponentProp = {
+  data: StickyNote,
+  containerRef: RefObject<HTMLDivElement | null>
+}
+
+function StickyNoteComponent({ data, containerRef }: StickyNoteComponentProp) {
+
+  const [position, setPosition] = useState<{ left: number, top: number }>({ left: 0, top: 10 })
+
+  const elementRef = useRef<HTMLDivElement | null>(null);
+  const offset = useRef({ x: 0, y: 0 });
+
+  const onDragStart = useCallback((e: DragEvent<HTMLDivElement>) => {
+
+    // Calculate the initial offset from the pointer position to the element's edge
+    if (elementRef.current) {
+      const rect = elementRef.current.getBoundingClientRect();
+      offset.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+    }
+  }, []);
+
+  const onDrag = useCallback((e: DragEvent<HTMLDivElement>) => {
+
+    if (containerRef.current && elementRef.current) {
+      const parentRect = containerRef.current.getBoundingClientRect();
+      const elementRect = elementRef.current.getBoundingClientRect();
+
+      // Calculate new position relative to the parent container
+      let newX = e.clientX - parentRect.left - offset.current.x;
+      let newY = e.clientY - parentRect.top - offset.current.y;
+
+      // Constrain movement within the parent boundaries
+      newX = Math.max(0, Math.min(newX, parentRect.width - elementRect.width));
+      newY = Math.max(0, Math.min(newY, parentRect.height - elementRect.height));
+
+      setPosition({ left: newX, top: newY })
+    }
+  }, [])
+
+  return (
+    <div ref={elementRef} draggable onDragEnd={onDrag} onDragStart={onDragStart} className='sticky-note' style={{ ...position }}>
+      {data.value}
+    </div>
+  )
+}
+
+export default StickyNoteComponent
