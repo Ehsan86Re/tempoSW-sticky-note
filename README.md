@@ -11,4 +11,4 @@ Overall, the architecture focuses on simplicity and separation of concerns, maki
 ## Run application:
 "npm run dev"
 or
-"npm run preview"
+"npm run build; npm run preview"
